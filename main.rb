@@ -5,8 +5,8 @@ require 'string-utility'
 require 'ghuls'
 
 gh = Utilities.configure_stuff(token: ENV['GHULS_TOKEN'])
-demonyms = YAML.load_file("web/public/demonyms.yml")
-adjective_path = "web/public/adjectives.txt"
+demonyms = YAML.load_file("public/demonyms.yml")
+adjective_path = "public/adjectives.txt"
 
 get '/' do
   erb :index
