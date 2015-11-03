@@ -2,11 +2,11 @@ require 'sinatra'
 require 'chartkick'
 require 'yaml'
 require 'string-utility'
-require 'ghuls'
+require 'ghuls/lib'
 
-gh = Utilities.configure_stuff(token: ENV['GHULS_TOKEN'])
-demonyms = YAML.load_file("public/demonyms.yml")
-adjective_path = "public/adjectives.txt"
+gh = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
+demonyms = YAML.load_file('public/demonyms.yml')
+adjective_path = 'public/adjectives.txt'
 
 get '/' do
   erb :index
@@ -14,15 +14,15 @@ end
 
 get '/analyze' do
   if params[:user].nil?
-    random = Utilities.get_random_user(gh[:git])
+    random = GHULS::Lib.get_random_user(gh[:git])
     redirect to("/analyze?user=#{random}")
   end
   analyze(params[:user], gh, demonyms, adjective_path)
 end
 
 def analyze(user, gh, demonyms, adjective_path)
-  user_data = Utilities.analyze_user(user, gh[:git])
-  org_data = Utilities.analyze_orgs(user, gh[:git])
+  user_data = GHULS::Lib.analyze_user(user, gh[:git])
+  org_data = GHULS::Lib.analyze_orgs(user, gh[:git])
   if user_data != false
     user_adjective = StringUtility.random_line(adjective_path)
     user_colors = []
@@ -35,7 +35,7 @@ def analyze(user, gh, demonyms, adjective_path)
           user_demonym = "#{l} coder"
         end
       end
-      user_colors.push(Utilities.get_color_for_language(l.to_s, gh[:colors]))
+      user_colors.push(GHULS::Lib.get_color_for_language(l.to_s, gh[:colors]))
     end
 
     variables = {
@@ -58,7 +58,7 @@ def analyze(user, gh, demonyms, adjective_path)
             org_demonym = "#{l} coder"
           end
         end
-        org_colors.push(Utilities.get_color_for_language(l.to_s, gh[:colors]))
+        org_colors.push(GHULS::Lib.get_color_for_language(l.to_s, gh[:colors]))
       end
 
       variables[:org_data] = org_data
