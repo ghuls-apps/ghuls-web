@@ -5,7 +5,8 @@
 
     <title>Language Statistics for <%= user %></title>
 
-    <h1><%= user %></h1>
+    <% url = "https://github.com/#{user}" %>
+    <h1><a href="<%= url %>"><%= user %></a></h1>
     <%= pie_chart(user_data, colors: user_colors, id: 'user_chart', library: {
           backgroundColor: "#4C9787"
         }) %>
