@@ -6,17 +6,22 @@
     <title>Language Statistics for <%= user %></title>
 
     <% url = "https://github.com/#{user}" %>
+    <img src= <%= avatar %>>
     <h1><a href="<%= url %>"><%= user %></a></h1>
-    <%= pie_chart(user_data, colors: user_colors, id: 'user_chart', library: {
-          backgroundColor: "#4C9787"
-        }) %>
-    <p><%= user %> by themself is <%= user_adjective %> <%= user_demonym %></p>
+    <% if user_personal_exists %>
+      <%= pie_chart(user_data, colors: user_colors, id: 'user_chart', library: {
+            backgroundColor: "#4C9787"
+          }) %>
+      <p><%= user %> by themself is <%= user_fancy_name %></p>
+    <% else %>
+      <p>Unfortunately, <%= user %> has no personal repositories</p>
+    <% end %>
 
     <% if org_exists %>
       <%= pie_chart(org_data, colors: org_colors, id: 'org_chart', library: {
             backgroundColor: "#4C9787"
         }) %>
-      <p><%= user %> when teamed up with others becomes <%= org_adjective %> <%= org_demonym %></p>
+      <p><%= user %> when teamed up with others becomes <%= org_fancy_name %></p>
     <% else %>
       <p>Unfortunately, <%= user %> has not contributed to any organizations :(</p>
     <% end %>

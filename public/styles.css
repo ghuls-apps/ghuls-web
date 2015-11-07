@@ -14,6 +14,16 @@ body {
   background-color: #006B54;
 }
 
+/* User profile images are 420x420. */
+img {
+	width: 105px;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+}
+
 h1 {
   font-family: "LatoWebLight";
   text-align: center;

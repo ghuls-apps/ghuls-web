@@ -1,8 +1,15 @@
 <body>
-    <title>User not Found</title>
+    <title>Error: <%= error %></title>
     <link rel="stylesheet" href="/styles.css">
     <h1>Sorry, something went wrong.</h1>
-    <h1>We either could not find anyone under the name <%= user %>, or we could not find any data for them.</h1>
+
+    <% if error == 'UserNotFound' %>
+      <h1>We could not find any user under the name <%= user %>.</h1>
+    <% elsif error == 'NoDataFound' %>
+      <img src=<%= avatar %>>
+      <h1>We could not find any data for the user <%= user %>.</h1>
+    <% end %>
+
     <h1>Please try again with a different user. If you believe this is an error, please report it to the developer.</h1>
     <form action="/analyze" method="get">
         <input type="text" name="user" placeholder="Analyze another user">
