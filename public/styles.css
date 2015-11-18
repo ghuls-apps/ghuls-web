@@ -71,10 +71,20 @@ a {
   color: #000;
 }
 
-#user_chart, #org_chart {
+/* Pie charts */
+#user_chart, #org_chart, #user_repos, #org_repos {
   border: 2px solid;
   border-color: #7FB5A9;
   margin-left: 25%;
   margin-right: 25%;
+  display: block;
+}
+
+/* Columns charts */
+#user_forks, #org_forks, #user_issues, #org_issues {
+  border: 2px solid;
+  border-color: #7FB5A9;
+  margin-left: 5%;
+  margin-right: 5%;
   display: block;
 }
