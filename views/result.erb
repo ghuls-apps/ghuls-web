@@ -3,27 +3,52 @@
     <script src="//www.google.com/jsapi"></script>
     <script src="chartkick.js"></script>
 
-    <title>Language Statistics for <%= user %></title>
+    <title>Language Statistics for <%= username %></title>
 
-    <% url = "https://github.com/#{user}" %>
+    <% url = "https://github.com/#{username}" %>
+    <% bgcolor = { backgroundColor: '#4C9787' } %>
+    <% issue_colors = ['#6cc644', '#bd2c00', '#6cc644', '#6e5494', '#bd2c00'] %>
     <img src= <%= avatar %>>
-    <h1><a href="<%= url %>"><%= user %></a></h1>
-    <% if user_personal_exists %>
-      <%= pie_chart(user_data, colors: user_colors, id: 'user_chart', library: {
-            backgroundColor: "#4C9787"
-          }) %>
-      <p><%= user %> by themself is <%= user_fancy_name %></p>
+    <h1><a href="<%= url %>"><%= username %></a></h1>
+    <% if language_data[:user_personal_exists] %>
+      <%= pie_chart(language_data[:user_data],
+                    colors: language_data[:user_colors],
+                    id: 'user_chart',
+                    library: bgcolor) %>
+      <p><%= username %> by themself is <%= language_data[:user_fancy_name] %></p>
+      <p><%= username %> has <%= follow_data[:followers] %> followers </p>
+      <p><%= username %> is following <%= follow_data[:following] %> users</p>
+
+      <%= column_chart(user_forks, id: 'user_forks', height: "500px", library: bgcolor) %>
+      <p>Totals: <%= totals[:user][:forks] %> forks, <%= totals[:user][:stars] %> stars, and <%= totals[:user][:watchers] %> watchers</p>
+
+      <%= column_chart(user_issues, id: 'user_issues', height: "500px", colors: issue_colors, library: bgcolor) %>
+      <p>Issue totals: <%= totals[:user][:issues][:open] %> open, <%= totals[:user][:issues][:closed] %> closed</p>
+      <p>Pull totals: <%= totals[:user][:pulls][:open] %> open, <%= totals[:user][:pulls][:merged] %> merged, <%= totals[:user][:pulls][:closed] %> closed without merge</p>
+
+      <%= pie_chart(user_repo_totals, id: 'user_repos', library: bgcolor) %>
     <% else %>
-      <p>Unfortunately, <%= user %> has no personal repositories</p>
+      <p>Unfortunately, <%= username %> has no personal repositories</p>
     <% end %>
 
-    <% if org_exists %>
-      <%= pie_chart(org_data, colors: org_colors, id: 'org_chart', library: {
-            backgroundColor: "#4C9787"
-        }) %>
-      <p><%= user %> when teamed up with others becomes <%= org_fancy_name %></p>
+    <br /><br /><br /><br /><br /><br />
+    <% if language_data[:org_exists] %>
+      <h1>Organizations</h1>
+      <%= pie_chart(language_data[:org_data],
+                    colors: language_data[:org_colors],
+                    id: 'org_chart',
+                    library: bgcolor) %>
+      <p><%= username %> when teamed up with others becomes <%= language_data[:org_fancy_name] %></p>
+      <%= column_chart(org_forks, id: 'org_forks', height: "500px", library: bgcolor) %>
+      <p>Totals: <%= totals[:orgs][:forks] %> forks, <%= totals[:orgs][:stars] %> stars, and <%= totals[:orgs][:watchers] %> watchers</p>
+
+      <%= column_chart(org_issues, id: 'org_issues', height: "500px", colors: issue_colors, library: bgcolor) %>
+      <p>Issue totals: <%= totals[:orgs][:issues][:open] %> open, <%= totals[:orgs][:issues][:closed] %> closed</p>
+      <p>Pull totals: <%= totals[:orgs][:pulls][:open] %> open, <%= totals[:orgs][:pulls][:merged] %> merged, <%= totals[:orgs][:pulls][:closed] %> closed without merge</p>
+
+      <%= pie_chart(org_repo_totals, id: 'org_repos', library: bgcolor) %>
     <% else %>
-      <p>Unfortunately, <%= user %> has not contributed to any organizations :(</p>
+      <p>Unfortunately, <%= username %> has not contributed to any organizations :(</p>
     <% end %>
 
     <br /><br /><br /><br /><br /><br />
