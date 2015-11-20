@@ -72,7 +72,7 @@ a {
 }
 
 /* Pie charts */
-#user_chart, #org_chart, #user_repos, #org_repos {
+#user_chart, #org_chart, #user_repos, #org_repos, #combined_chart {
   border: 2px solid;
   border-color: #7FB5A9;
   margin-left: 25%;

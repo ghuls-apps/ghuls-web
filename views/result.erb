@@ -51,6 +51,16 @@
       <p>Unfortunately, <%= username %> has not contributed to any organizations :(</p>
     <% end %>
 
+    <% unless combined_langs.nil? %>
+      <br /><br /><br /><br /><br /><br />
+      <h1>Combined Languages</h1>
+      <%= pie_chart(combined_langs[:data],
+                    colors: combined_langs[:colors],
+                    id: 'combined_chart',
+                    library: bgcolor) %>
+      <p><%= username %> is totally <%= combined_langs[:fancy_name] %></p>
+    <% end %>
+
     <br /><br /><br /><br /><br /><br />
     <form action="/analyze" method="get">
         <input type="text" name="user" placeholder="Analyze another user">

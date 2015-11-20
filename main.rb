@@ -52,7 +52,43 @@ get '/analyze' do
     org_repo_totals: org_repo_totals,
     totals: totals
   }
+  locals[:combined_langs] = combine_data(language_data, demonyms, gh[:colors],
+                                         adjective_path)
   erb :result, locals: locals
+end
+
+# Combines organization and personal language data into a single set.
+# @param lang_data [Hash] The language data from #language_data.
+# @param demonyms [Hash] The demonyms hash obtained by YAML.
+# @param colors [Hash] The colors obtained by GHULS::Lib#configure_stuff.
+# @param adjective_path [String] The path to the adjective file.
+# @return [Hash] All data, including language bytes, fancy name, and colors.
+def combine_data(lang_data, demonyms, colors, adjective_path)
+  if lang_data[:user_personal_exists] && lang_data[:org_exists]
+    lang_colors = []
+    demonym = nil
+    adjective = StringUtility.random_line(adjective_path)
+    data = lang_data[:user_data].update(lang_data[:org_data]) do |_, v1, v2|
+      v1 + v2
+    end
+    data.each do |l, b|
+      if b == data.values.max
+        if demonyms.key?(l.to_s)
+          demonym = demonyms.fetch(l.to_s)
+        else
+          demonym = "#{l} coder"
+        end
+      end
+      lang_colors.push(GHULS::Lib.get_color_for_language(l.to_s, colors))
+    end
+    {
+      data: data,
+      fancy_name: "#{adjective} #{demonym}",
+      colors: lang_colors
+    }
+  else
+    nil
+  end
 end
 
 # Gets language data for the user. This includes both personal and organization
