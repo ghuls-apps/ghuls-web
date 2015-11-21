@@ -27,7 +27,7 @@ get '/analyze' do
 
   user_repos = GHULS::Lib.get_user_repos(user[:username], gh[:git])
   org_repos = GHULS::Lib.get_org_repos(user[:username], gh[:git])
-  language_data = language_data(user[:username], gh, demonyms, adjective_path)
+  lang_data = language_data(user[:username], gh, demonyms, adjective_path)
   follow = GHULS::Lib.get_followers_following(user[:username], gh[:git])
   user_forkage = fork_data(user[:username], user_repos, gh[:git])
   org_forkage = fork_data(user[:username], org_repos, gh[:git])
@@ -42,7 +42,7 @@ get '/analyze' do
   locals = {
     username: user[:username],
     avatar: user[:avatar],
-    language_data: language_data,
+    language_data: lang_data,
     follow_data: follow,
     user_forks: user_forkage,
     org_forks: org_forkage,
@@ -52,7 +52,7 @@ get '/analyze' do
     org_repo_totals: org_repo_totals,
     totals: totals
   }
-  locals[:combined_langs] = combine_data(language_data, demonyms, gh[:colors],
+  locals[:combined_langs] = combine_data(lang_data, demonyms, gh[:colors],
                                          adjective_path)
   erb :result, locals: locals
 end
@@ -68,7 +68,7 @@ def combine_data(lang_data, demonyms, colors, adjective_path)
     lang_colors = []
     demonym = nil
     adjective = StringUtility.random_line(adjective_path)
-    data = lang_data[:user_data].update(lang_data[:org_data]) do |_, v1, v2|
+    data = lang_data[:user_data].clone.update(lang_data[:org_data]) do |_, v1, v2|
       v1 + v2
     end
     data.each do |l, b|
