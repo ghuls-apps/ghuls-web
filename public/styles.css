@@ -81,10 +81,11 @@ a {
 }
 
 /* Columns charts */
-#user_forks, #org_forks, #user_issues, #org_issues {
+#user_forks, #org_forks, #user_issues, #org_issues, #daily_calendar, #weekly_calendar, #monthly_calendar {
   border: 2px solid;
   border-color: #7FB5A9;
   margin-left: 5%;
   margin-right: 5%;
   display: block;
+  overflow-x: scroll;
 }

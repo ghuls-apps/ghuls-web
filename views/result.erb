@@ -61,6 +61,16 @@
       <p><%= username %> is totally <%= combined_langs[:fancy_name] %></p>
     <% end %>
 
+    <h1>Contribution Data</h1>
+    <p>Currently, they have contributed for <%= streaks[:current] %> consecutive days.<br />The most consecutive days they have ever contributed on was <%= streaks[:longest] %></p>
+    <p>This year, they have contributed <%= calendar[:yearly] %> times!</p>
+    <p>Their average day consists of contributing <%= average[:day] %> times.</p>
+    <p>Their average week consists of contributing <%= average[:week] %> times.</p>
+    <p>Their average month consists of contributing <%= average[:month] %> times.</p>
+    <%= column_chart(calendar[:daily], id: 'daily_calendar', height: '500px')%>
+    <%= column_chart(calendar[:weekly], id: 'weekly_calendar', height: '500px') %>
+    <%= column_chart(calendar[:monthly], id: 'monthly_calendar', height: '500px') %>
+
     <br /><br /><br /><br /><br /><br />
     <form action="/analyze" method="get">
         <input type="text" name="user" placeholder="Analyze another user">
