@@ -4,6 +4,7 @@ require 'yaml'
 require 'string-utility'
 require 'ghuls/lib'
 require 'dotenv'
+require 'github/calendar'
 
 Dotenv.load
 gh = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
@@ -52,7 +53,22 @@ get '/analyze' do
     org_issues: org_issues,
     user_repo_totals: user_repo_totals,
     org_repo_totals: org_repo_totals,
-    totals: totals
+    totals: totals,
+    streaks: {
+      longest: GitHub::Calendar.get_longest_streak(user[:username]),
+      current: GitHub::Calendar.get_current_streak(user[:username])
+    },
+    calendar: {
+      weekly: GitHub::Calendar.get_weekly(user[:username]),
+      total_year: GitHub::Calendar.get_total_year(user[:username]),
+      daily: GitHub::Calendar.get_daily(user[:username]),
+      monthly: GitHub::Calendar.get_monthly(user[:username])
+    },
+    average: {
+      week: GitHub::Calendar.get_average_week(user[:username]),
+      day: GitHub::Calendar.get_average_day(user[:username]),
+      month: GitHub::Calendar.get_average_month(user[:username])
+    }
   }
   locals[:combined_langs] = combine_data(lang_data, demonyms, gh[:colors],
                                          adjective_path)
@@ -92,6 +108,7 @@ def combine_data(lang_data, demonyms, colors, adjective_path)
     nil
   end
 end
+
 
 # Gets language data for the user. This includes both personal and organization
 # data.
