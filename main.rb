@@ -13,7 +13,7 @@ get '/' do
 end
 
 get '/analyze' do
-  if params[:user].nil?
+  if params[:user].nil? || params[:user].empty? || !params[:user].is_a?(String)
     random = GHULS::Lib.get_random_user(gh[:git])
     redirect to("/analyze?user=#{random[:username]}")
   end
