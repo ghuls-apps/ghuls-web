@@ -3,7 +3,9 @@ require 'chartkick'
 require 'yaml'
 require 'string-utility'
 require 'ghuls/lib'
+require 'dotenv'
 
+Dotenv.load
 gh = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
 demonyms = YAML.load_file('public/demonyms.yml')
 adjective_path = 'public/adjectives.txt'
