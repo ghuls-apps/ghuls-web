@@ -61,15 +61,16 @@
       <p><%= username %> is totally <%= combined_langs[:fancy_name] %></p>
     <% end %>
 
+    <br /><br /><br /><br /><br /><br />
     <h1>Contribution Data</h1>
     <p>Currently, they have contributed for <%= streaks[:current] %> consecutive days.<br />The most consecutive days they have ever contributed on was <%= streaks[:longest] %></p>
-    <p>This year, they have contributed <%= calendar[:yearly] %> times!</p>
-    <p>Their average day consists of contributing <%= average[:day] %> times.</p>
-    <p>Their average week consists of contributing <%= average[:week] %> times.</p>
-    <p>Their average month consists of contributing <%= average[:month] %> times.</p>
-    <%= column_chart(calendar[:daily], id: 'daily_calendar', height: '500px')%>
-    <%= column_chart(calendar[:weekly], id: 'weekly_calendar', height: '500px') %>
-    <%= column_chart(calendar[:monthly], id: 'monthly_calendar', height: '500px') %>
+    <p>This year, they have contributed <%= calendar[:total_year] %> times!</p>
+    <p>Their average day consists of contributing <%= average[:day] %> times.<br />Their average week consists of contributing <%= average[:week] %> times.<br />Their average month consists of contributing <%= average[:month] %> times.</p>
+    <%= column_chart(calendar[:monthly],
+                     id: 'monthly_calendar',
+                     height: '500px',
+                     # colors: calendar[:month_colors],
+                     library: bgcolor.merge({colors: calendar[:month_colors]})) %>
 
     <br /><br /><br /><br /><br /><br />
     <form action="/analyze" method="get">

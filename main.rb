@@ -10,6 +10,20 @@ Dotenv.load
 gh = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
 demonyms = YAML.load_file('public/demonyms.yml')
 adjective_path = 'public/adjectives.txt'
+MONTH_MAP = {
+  '01' => 'January',
+  '02' => 'February',
+  '03' => 'March',
+  '04' => 'April',
+  '05' => 'May',
+  '06' => 'June',
+  '07' => 'July',
+  '08' => 'August',
+  '09' => 'September',
+  '10' => 'October',
+  '11' => 'November',
+  '12' => 'December'
+}
 
 get '/' do
   erb :index
@@ -42,6 +56,12 @@ get '/analyze' do
     user: get_totals(user_forkage, user_issues),
     orgs: get_totals(org_forkage, org_issues)
   }
+
+  months = GitHub::Calendar.get_monthly(user[:username])
+  month_colors = [StringUtility.random_color_six]
+  months&.keys&.each do |k|
+    months[MONTH_MAP[k]] = months.delete(k) if MONTH_MAP[k]
+  end
   locals = {
     username: user[:username],
     avatar: user[:avatar],
@@ -59,10 +79,9 @@ get '/analyze' do
       current: GitHub::Calendar.get_current_streak(user[:username])
     },
     calendar: {
-      weekly: GitHub::Calendar.get_weekly(user[:username]),
       total_year: GitHub::Calendar.get_total_year(user[:username]),
-      daily: GitHub::Calendar.get_daily(user[:username]),
-      monthly: GitHub::Calendar.get_monthly(user[:username])
+      monthly: months,
+      month_colors: month_colors
     },
     average: {
       week: GitHub::Calendar.get_average_week(user[:username]),

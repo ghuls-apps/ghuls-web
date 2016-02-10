@@ -87,5 +87,5 @@ a {
   margin-left: 5%;
   margin-right: 5%;
   display: block;
-  overflow-x: scroll;
+  overflow: scroll;
 }
