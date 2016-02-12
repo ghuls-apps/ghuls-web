@@ -14,13 +14,9 @@ module Helpers
       end
       data.each do |l, b|
         if b == data.values.max
-          if Constants::DEMONYMS.key?(l.to_s)
-            demonym = Constants::DEMONYMS.fetch(l.to_s)
-          else
-            demonym = "#{l} coder"
-          end
+          demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        lang_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
+        lang_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
       end
       {
         data: data,
@@ -48,13 +44,9 @@ module Helpers
       user_colors = []
       user_langs.each do |l, b|
         if b == user_langs.values.max
-          if Constants::DEMONYMS.key?(l.to_s)
-            demonym = Constants::DEMONYMS.fetch(l.to_s)
-          else
-            demonym = "#{l} coder"
-          end
+          demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        user_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
+        user_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
       end
 
       ret[:user_data] = user_langs
@@ -71,13 +63,9 @@ module Helpers
       org_colors = []
       org_langs.each do |l, b|
         if b == org_langs.values.max
-          if Constants::DEMONYMS.key?(l.to_s)
-            demonym = Constants::DEMONYMS.fetch(l.to_s)
-          else
-            demonym = "#{l} coder"
-          end
+          demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        org_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
+        org_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
       end
 
       ret[:org_data] = org_langs
@@ -98,7 +86,7 @@ module Helpers
   def fork_data(username, repos)
     repo_data = {}
     repos[:public].each do |r|
-      next if repos[:forks].include? r
+      next if repos[:forks].include?(r)
       repo_data[r] = GHULS::Lib.get_forks_stars_watchers(r, GH[:git])
     end
     ret = [
@@ -107,11 +95,11 @@ module Helpers
       { name: 'Watchers', data: [] }
     ]
     repo_data.each do |repo, hash|
-      repo = repo.sub("#{username}/", '')
+      repo.sub!("#{username}/", '') || repo
       next if hash[:forks] < 1 && hash[:stars] < 1 && hash[:watchers] < 1
-      ret[0][:data].push([repo, hash[:forks]])
-      ret[1][:data].push([repo, hash[:stars]])
-      ret[2][:data].push([repo, hash[:watchers]])
+      ret[0][:data] << [repo, hash[:forks]]
+      ret[1][:data] << [repo, hash[:stars]]
+      ret[2][:data] << [repo, hash[:watchers]]
     end
     ret
   end
@@ -123,7 +111,7 @@ module Helpers
   def issue_data(username, repos)
     repo_data = {}
     repos[:public].each do |r|
-      next if repos[:forks].include? r
+      next if repos[:forks].include?(r)
       repo_data[r] = GHULS::Lib.get_issues_pulls(r, GH[:git])
     end
     ret = [
@@ -134,15 +122,14 @@ module Helpers
       { name: 'Closed Pulls', data: [] }
     ]
     repo_data.each do |repo, hash|
-      repo = repo.sub("#{username}/", '')
-      next if hash[:issues][:open] < 1 && hash[:issues][:closed] < 1 &&
-      hash[:pulls][:open] < 1 && hash[:pulls][:merged] < 1 &&
-      hash[:pulls][:closed] < 1
-      ret[0][:data].push([repo, hash[:issues][:open]])
-      ret[1][:data].push([repo, hash[:issues][:closed]])
-      ret[2][:data].push([repo, hash[:pulls][:open]])
-      ret[3][:data].push([repo, hash[:pulls][:merged]])
-      ret[4][:data].push([repo, hash[:pulls][:closed]])
+      repo.sub!("#{username}/", '') || repo
+      next if hash[:issues][:open] < 1 && hash[:issues][:closed] < 1 && hash[:pulls][:open] < 1 &&
+              hash[:pulls][:merged] < 1 && hash[:pulls][:closed] < 1
+      ret[0][:data] << [repo, hash[:issues][:open]]
+      ret[1][:data] << [repo, hash[:issues][:closed]]
+      ret[2][:data] << [repo, hash[:pulls][:open]]
+      ret[3][:data] << [repo, hash[:pulls][:merged]]
+      ret[4][:data] << [repo, hash[:pulls][:closed]]
     end
     ret
   end
@@ -151,19 +138,11 @@ module Helpers
   # @param repos [Hash] See #fork_data
   # @return [Hash] A hash containing the totals for all repo types.
   def repo_count(repos)
-    publics = 0
-    forks = 0
-    mirrors = 0
-    privates = 0
-    repos[:public].each { |_| publics += 1 }
-    repos[:forks].each { |_| forks += 1 }
-    repos[:mirrors].each { |_| mirrors += 1 }
-    repos[:privates].each { |_| privates += 1 }
     {
-      'Public': publics,
-      'Forks': forks,
-      'Mirrors': mirrors,
-      'Privates': privates
+      'Public': repos[:public].size,
+      'Forks': repos[:forks].size,
+      'Mirrors': repos[:mirrors].size,
+      'Privates': repos[:privates].size
     }
   end
 
