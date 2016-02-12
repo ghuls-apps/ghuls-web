@@ -95,11 +95,11 @@ module Helpers
       { name: 'Watchers', data: [] }
     ]
     repo_data.each do |repo, hash|
-      repo.sub!("#{username}/", '') || repo
+      rep = repo.sub("#{username}/", '')
       next if hash[:forks] < 1 && hash[:stars] < 1 && hash[:watchers] < 1
-      ret[0][:data] << [repo, hash[:forks]]
-      ret[1][:data] << [repo, hash[:stars]]
-      ret[2][:data] << [repo, hash[:watchers]]
+      ret[0][:data] << [rep, hash[:forks]]
+      ret[1][:data] << [rep, hash[:stars]]
+      ret[2][:data] << [rep, hash[:watchers]]
     end
     ret
   end
@@ -122,14 +122,14 @@ module Helpers
       { name: 'Closed Pulls', data: [] }
     ]
     repo_data.each do |repo, hash|
-      repo.sub!("#{username}/", '') || repo
+      rep = repo.sub("#{username}/", '')
       next if hash[:issues][:open] < 1 && hash[:issues][:closed] < 1 && hash[:pulls][:open] < 1 &&
               hash[:pulls][:merged] < 1 && hash[:pulls][:closed] < 1
-      ret[0][:data] << [repo, hash[:issues][:open]]
-      ret[1][:data] << [repo, hash[:issues][:closed]]
-      ret[2][:data] << [repo, hash[:pulls][:open]]
-      ret[3][:data] << [repo, hash[:pulls][:merged]]
-      ret[4][:data] << [repo, hash[:pulls][:closed]]
+      ret[0][:data] << [rep, hash[:issues][:open]]
+      ret[1][:data] << [rep, hash[:issues][:closed]]
+      ret[2][:data] << [rep, hash[:pulls][:open]]
+      ret[3][:data] << [rep, hash[:pulls][:merged]]
+      ret[4][:data] << [rep, hash[:pulls][:closed]]
     end
     ret
   end
