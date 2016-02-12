@@ -1,3 +1,4 @@
+require_relative 'lib/constants'
 require 'sinatra'
 require 'chartkick'
 require 'yaml'
@@ -7,23 +8,8 @@ require 'dotenv'
 require 'github/calendar'
 
 Dotenv.load
-gh = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
-demonyms = YAML.load_file('public/demonyms.yml')
-adjective_path = 'public/adjectives.txt'
-MONTH_MAP = {
-  '01' => 'January',
-  '02' => 'February',
-  '03' => 'March',
-  '04' => 'April',
-  '05' => 'May',
-  '06' => 'June',
-  '07' => 'July',
-  '08' => 'August',
-  '09' => 'September',
-  '10' => 'October',
-  '11' => 'November',
-  '12' => 'December'
-}
+
+GH = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
 
 get '/' do
   erb :index
@@ -31,25 +17,22 @@ end
 
 get '/analyze' do
   if params[:user].nil? || params[:user].empty? || !params[:user].is_a?(String)
-    random = GHULS::Lib.get_random_user(gh[:git])
+    random = GHULS::Lib.get_random_user(GH[:git])
     redirect to("/analyze?user=#{random[:username]}")
   end
-  user = GHULS::Lib.get_user_and_check(params[:user], gh[:git])
-  if user == false
-    erb :fail, locals: {
-      user: params[:user],
-      error: 'UserNotFound'
-    }
+  user = GHULS::Lib.get_user_and_check(params[:user], GH[:git])
+  unless user
+    erb :fail, locals: { user: params[:user], error: 'UserNotFound' }
   end
 
-  user_repos = GHULS::Lib.get_user_repos(user[:username], gh[:git])
-  org_repos = GHULS::Lib.get_org_repos(user[:username], gh[:git])
-  lang_data = language_data(user[:username], gh, demonyms, adjective_path)
-  follow = GHULS::Lib.get_followers_following(user[:username], gh[:git])
-  user_forkage = fork_data(user[:username], user_repos, gh[:git])
-  org_forkage = fork_data(user[:username], org_repos, gh[:git])
-  user_issues = issue_data(user[:username], user_repos, gh[:git])
-  org_issues = issue_data(user[:username], org_repos, gh[:git])
+  user_repos = GHULS::Lib.get_user_repos(user[:username], GH[:git])
+  org_repos = GHULS::Lib.get_org_repos(user[:username], GH[:git])
+  lang_data = language_data(user[:username])
+  follow = GHULS::Lib.get_followers_following(user[:username], GH[:git])
+  user_forkage = fork_data(user[:username], user_repos)
+  org_forkage = fork_data(user[:username], org_repos)
+  user_issues = issue_data(user[:username], user_repos)
+  org_issues = issue_data(user[:username], org_repos)
   user_repo_totals = repo_count(user_repos)
   org_repo_totals = repo_count(org_repos)
   totals = {
@@ -60,7 +43,7 @@ get '/analyze' do
   months = GitHub::Calendar.get_monthly(user[:username])
   month_colors = [StringUtility.random_color_six]
   months&.keys&.each do |k|
-    months[MONTH_MAP[k]] = months.delete(k) if MONTH_MAP[k]
+    months[Constants::MONTH_MAP[k]] = months.delete(k) if Constants::MONTH_MAP[k]
   end
   locals = {
     username: user[:username],
@@ -89,34 +72,30 @@ get '/analyze' do
       month: GitHub::Calendar.get_average_month(user[:username])
     }
   }
-  locals[:combined_langs] = combine_data(lang_data, demonyms, gh[:colors],
-                                         adjective_path)
+  locals[:combined_langs] = combine_data(lang_data)
   erb :result, locals: locals
 end
 
 # Combines organization and personal language data into a single set.
 # @param lang_data [Hash] The language data from #language_data.
-# @param demonyms [Hash] The demonyms hash obtained by YAML.
-# @param colors [Hash] The colors obtained by GHULS::Lib#configure_stuff.
-# @param adjective_path [String] The path to the adjective file.
 # @return [Hash] All data, including language bytes, fancy name, and colors.
-def combine_data(lang_data, demonyms, colors, adjective_path)
+def combine_data(lang_data)
   if lang_data[:user_personal_exists] && lang_data[:org_exists]
     lang_colors = []
     demonym = nil
-    adjective = StringUtility.random_line(adjective_path)
+    adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
     data = lang_data[:user_data].clone.update(lang_data[:org_data]) do |_, v1, v2|
       v1 + v2
     end
     data.each do |l, b|
       if b == data.values.max
-        if demonyms.key?(l.to_s)
-          demonym = demonyms.fetch(l.to_s)
+        if Constants::DEMONYMS.key?(l.to_s)
+          demonym = Constants::DEMONYMS.fetch(l.to_s)
         else
           demonym = "#{l} coder"
         end
       end
-      lang_colors.push(GHULS::Lib.get_color_for_language(l.to_s, colors))
+      lang_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
     end
     {
       data: data,
@@ -132,28 +111,25 @@ end
 # Gets language data for the user. This includes both personal and organization
 # data.
 # @param user [String] The username.
-# @param gh [Hash] The hash obtained by GHULS::Lib.configure_stuff
-# @param demonyms [Hash] The demonyms hash obtained by YAML.
-# @param adjective_path [String] The path to the adjective file.
 # @return [Hash] A hash containing all language data possible.
-def language_data(user, gh, demonyms, adjective_path)
-  user_langs = GHULS::Lib.get_user_langs(user, gh[:git])
-  org_langs = GHULS::Lib.get_org_langs(user, gh[:git])
+def language_data(user)
+  user_langs = GHULS::Lib.get_user_langs(user, GH[:git])
+  org_langs = GHULS::Lib.get_org_langs(user, GH[:git])
   ret = {}
 
   if !user_langs.empty?
-    adjective = StringUtility.random_line(adjective_path)
+    adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
     demonym = nil
     user_colors = []
     user_langs.each do |l, b|
       if b == user_langs.values.max
-        if demonyms.key?(l.to_s)
-          demonym = demonyms.fetch(l.to_s)
+        if Constants::DEMONYMS.key?(l.to_s)
+          demonym = Constants::DEMONYMS.fetch(l.to_s)
         else
           demonym = "#{l} coder"
         end
       end
-      user_colors.push(GHULS::Lib.get_color_for_language(l.to_s, gh[:colors]))
+      user_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
     end
 
     ret[:user_data] = user_langs
@@ -165,18 +141,18 @@ def language_data(user, gh, demonyms, adjective_path)
   end
 
   if !org_langs.empty?
-    adjective = StringUtility.random_line(adjective_path)
+    adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
     demonym = nil
     org_colors = []
     org_langs.each do |l, b|
       if b == org_langs.values.max
-        if demonyms.key?(l.to_s)
-          demonym = demonyms.fetch(l.to_s)
+        if Constants::DEMONYMS.key?(l.to_s)
+          demonym = Constants::DEMONYMS.fetch(l.to_s)
         else
           demonym = "#{l} coder"
         end
       end
-      org_colors.push(GHULS::Lib.get_color_for_language(l.to_s, gh[:colors]))
+      org_colors.push(GHULS::Lib.get_color_for_language(l.to_s, GH[:colors]))
     end
 
     ret[:org_data] = org_langs
@@ -193,13 +169,12 @@ end
 # Gets fork data for the repositories.
 # @param username [String] The username.
 # @param repos [Hash] The repositories hash given by GHULS::Lib.
-# @param gh [Octokit::Client] The instance of Octokit.
 # @return [Hash] The repositories and their according forks, stars, and watchers
-def fork_data(username, repos, gh)
+def fork_data(username, repos)
   repo_data = {}
   repos[:public].each do |r|
     next if repos[:forks].include? r
-    repo_data[r] = GHULS::Lib.get_forks_stars_watchers(r, gh)
+    repo_data[r] = GHULS::Lib.get_forks_stars_watchers(r, GH[:git])
   end
   ret = [
     { name: 'Forks', data: [] },
@@ -219,13 +194,12 @@ end
 # Gets issue data for the repositories.
 # @param username [String] See #fork_data
 # @param repos [Hash] See #fork_data
-# @param gh [Octokit::Client] See #fork_data
 # @return [Hash] The repositories and their according issues and pull counts.
-def issue_data(username, repos, gh)
+def issue_data(username, repos)
   repo_data = {}
   repos[:public].each do |r|
     next if repos[:forks].include? r
-    repo_data[r] = GHULS::Lib.get_issues_pulls(r, gh)
+    repo_data[r] = GHULS::Lib.get_issues_pulls(r, GH[:git])
   end
   ret = [
     { name: 'Open Issues', data: [] },
