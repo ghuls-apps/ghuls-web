@@ -8,11 +8,11 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (1.2.2)
       faraday (~> 0.8)
-    ghuls-lib (2.2.3)
-      faraday-http-cache
-      net-http-persistent
-      octokit (>= 4.0.1)
-      string-utility (>= 2.6.0)
+    ghuls-lib (2.3.1)
+      faraday-http-cache (>= 1.2.2)
+      net-http-persistent (>= 2.9.4)
+      octokit (>= 4.2.0)
+      string-utility (>= 2.6.1)
     github-calendar (1.0.0)
       nokogiri (>= 1.6.6.2)
       string-utility (>= 2.5.0)
@@ -42,9 +42,8 @@ PLATFORMS
 DEPENDENCIES
   chartkick (>= 1.4.1)
   dotenv (>= 2.1.0)
-  ghuls-lib (>= 2.2.3)
+  ghuls-lib (>= 2.3.1)
   github-calendar (>= 1.0.0)
-  octokit (>= 4.2.0)
   sinatra (>= 1.4.7)
   string-utility (>= 2.6.1)
 
