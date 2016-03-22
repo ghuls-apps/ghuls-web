@@ -16,7 +16,7 @@ body {
 
 /* User profile images are 420x420. */
 img {
-	width: 105px;
+  width: 105px;
   height: auto;
   display: block;
   margin-left: auto;
@@ -42,8 +42,7 @@ input[type="text"] {
   margin: 0 auto;
   display: block;
   padding: 3px;
-  border: 1px solid;
-  border-color: #95A898;
+  border: 1px solid #95A898;
   font-size: 55px;
   font-weight: 100;
   background-color: #4C9787;
@@ -57,8 +56,7 @@ a.btn, a:link.btn, a:visited.btn, a:hover.btn, a:active.btn {
   display: block;
   padding: 3px;
   background-color: #4C9787;
-  border-color: #95A898;
-  border: 1px solid;
+  border: 1px solid #95A898;
   font-size: 55px;
   font-weight: 100;
   text-align: center;
@@ -73,8 +71,7 @@ a {
 
 /* Pie charts */
 #user_chart, #org_chart, #user_repos, #org_repos, #combined_chart {
-  border: 2px solid;
-  border-color: #7FB5A9;
+  border: 2px solid #7FB5A9;
   margin-left: 25%;
   margin-right: 25%;
   display: block;
@@ -82,8 +79,7 @@ a {
 
 /* Columns charts */
 #user_forks, #org_forks, #user_issues, #org_issues, #daily_calendar, #weekly_calendar, #monthly_calendar {
-  border: 2px solid;
-  border-color: #7FB5A9;
+  border: 2px solid #7FB5A9;
   margin-left: 5%;
   margin-right: 5%;
   display: block;
