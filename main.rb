@@ -45,7 +45,7 @@ get '/analyze' do
 
   months = GitHub::Calendar.get_monthly(user[:username])
   month_colors = [StringUtility.random_color_six]
-  months&.keys&.each do |k|
+  months.keys.each do |k|
     months[Constants::MONTH_MAP[k]] = months.delete(k) if Constants::MONTH_MAP[k]
   end
   locals = {
