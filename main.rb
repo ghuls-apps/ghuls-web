@@ -10,7 +10,7 @@ require 'github/calendar'
 
 Dotenv.load
 
-GH = GHULS::Lib.configure_stuff(token: ENV['GHULS_TOKEN'])
+GH = GHULS::Lib.new(token: ENV['GHULS_TOKEN'])
 
 helpers Helpers
 
@@ -20,18 +20,18 @@ end
 
 get '/analyze' do
   if params[:user].nil? || params[:user].empty? || !params[:user].is_a?(String)
-    random = GHULS::Lib.get_random_user(GH[:git])
+    random = GHULS::Lib.get_random_user
     redirect to("/analyze?user=#{random[:username]}")
   end
-  user = GHULS::Lib.get_user_and_check(params[:user], GH[:git])
+  user = GH.get_user_and_check(params[:user])
   unless user
     erb :fail, locals: { user: params[:user], error: 'UserNotFound' }
   end
 
-  user_repos = GHULS::Lib.get_user_repos(user[:username], GH[:git])
-  org_repos = GHULS::Lib.get_org_repos(user[:username], GH[:git])
+  user_repos = GH.get_user_repos(user[:username])
+  org_repos = GH.get_org_repos(user[:username])
   lang_data = language_data(user[:username])
-  follow = GHULS::Lib.get_followers_following(user[:username], GH[:git])
+  follow = GH.get_followers_following(user[:username])
   user_forkage = fork_data(user[:username], user_repos)
   org_forkage = fork_data(user[:username], org_repos)
   user_issues = issue_data(user[:username], user_repos)

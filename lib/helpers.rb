@@ -16,7 +16,7 @@ module Helpers
         if b == data.values.max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        lang_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
+        lang_colors << GH.get_color_for_language(l.to_s)
       end
       {
         data: data,
@@ -34,8 +34,8 @@ module Helpers
   # @param user [String] The username.
   # @return [Hash] A hash containing all language data possible.
   def language_data(user)
-    user_langs = GHULS::Lib.get_user_langs(user, GH[:git])
-    org_langs = GHULS::Lib.get_org_langs(user, GH[:git])
+    user_langs = GH.get_user_langs(user)
+    org_langs = GH.get_org_langs(user)
     ret = {}
 
     if !user_langs.empty?
@@ -46,7 +46,7 @@ module Helpers
         if b == user_langs.values.max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        user_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
+        user_colors << GH.get_color_for_language(l.to_s)
       end
 
       ret[:user_data] = user_langs
@@ -65,7 +65,7 @@ module Helpers
         if b == org_langs.values.max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
-        org_colors << GHULS::Lib.get_color_for_language(l.to_s, GH[:colors])
+        org_colors << GH.get_color_for_language(l.to_s)
       end
 
       ret[:org_data] = org_langs
@@ -87,7 +87,7 @@ module Helpers
     repo_data = {}
     repos[:public].each do |r|
       next if repos[:forks].include?(r)
-      repo_data[r] = GHULS::Lib.get_forks_stars_watchers(r, GH[:git])
+      repo_data[r] = GH.get_forks_stars_watchers(r)
     end
     ret = [
       { name: 'Forks', data: [] },
@@ -112,7 +112,7 @@ module Helpers
     repo_data = {}
     repos[:public].each do |r|
       next if repos[:forks].include?(r)
-      repo_data[r] = GHULS::Lib.get_issues_pulls(r, GH[:git])
+      repo_data[r] = GH.get_issues_pulls(r)
     end
     ret = [
       { name: 'Open Issues', data: [] },
