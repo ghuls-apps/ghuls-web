@@ -60,10 +60,6 @@ get '/analyze' do
     user_repo_totals: user_repo_totals,
     org_repo_totals: org_repo_totals,
     totals: totals,
-    streaks: {
-      longest: GitHub::Calendar.get_longest_streak(user[:username]),
-      current: GitHub::Calendar.get_current_streak(user[:username])
-    },
     calendar: {
       total_year: GitHub::Calendar.get_total_year(user[:username]),
       monthly: months,
