@@ -20,7 +20,7 @@ end
 
 get '/analyze' do
   if params[:user].nil? || params[:user].empty? || !params[:user].is_a?(String)
-    random = GHULS::Lib.get_random_user
+    random = GH.get_random_user
     redirect to("/analyze?user=#{random[:username]}")
   end
   user = GH.get_user_and_check(params[:user])
