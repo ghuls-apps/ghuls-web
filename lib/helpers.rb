@@ -17,8 +17,9 @@ module Helpers
       data = lang_data[:user_data].clone.update(lang_data[:org_data]) do |_, v1, v2|
         v1 + v2
       end
+      max = data.values.max
       data.each do |l, b|
-        if b == data.values.max
+        if b ==  max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
         lang_colors << GH.get_color_for_language(l.to_s)
@@ -47,8 +48,9 @@ module Helpers
       adjective = random_adjective
       demonym = nil
       user_colors = []
+      max = user_langs.values.max
       user_langs.each do |l, b|
-        if b == user_langs.values.max
+        if b == max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
         user_colors << GH.get_color_for_language(l.to_s)
@@ -66,8 +68,9 @@ module Helpers
       adjective = random_adjective
       demonym = nil
       org_colors = []
+      max = org_langs.values.max
       org_langs.each do |l, b|
-        if b == org_langs.values.max
+        if b == max
           demonym = Constants::DEMONYMS.key?(l.to_s) ? Constants::DEMONYMS.fetch(l.to_s) : "#{l} coder"
         end
         org_colors << GH.get_color_for_language(l.to_s)
