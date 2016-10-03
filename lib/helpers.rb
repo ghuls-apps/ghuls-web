@@ -1,6 +1,11 @@
 require_relative 'constants'
 
 module Helpers
+  # @return [String] A random line from the adjective file.
+  def random_adjective
+    Constants::ADJECTIVE_LINES[rand(Constants::ADJECTIVE_NUM_LINES)]
+  end
+
   # Combines organization and personal language data into a single set.
   # @param lang_data [Hash] The language data from #language_data.
   # @return [Hash] All data, including language bytes, fancy name, and colors.
@@ -8,7 +13,7 @@ module Helpers
     if lang_data[:user_personal_exists] && lang_data[:org_exists]
       lang_colors = []
       demonym = nil
-      adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
+      adjective = random_adjective
       data = lang_data[:user_data].clone.update(lang_data[:org_data]) do |_, v1, v2|
         v1 + v2
       end
@@ -39,7 +44,7 @@ module Helpers
     ret = {}
 
     if !user_langs.empty?
-      adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
+      adjective = random_adjective
       demonym = nil
       user_colors = []
       user_langs.each do |l, b|
@@ -58,7 +63,7 @@ module Helpers
     end
 
     if !org_langs.empty?
-      adjective = StringUtility.random_line(Constants::ADJECTIVE_PATH)
+      adjective = random_adjective
       demonym = nil
       org_colors = []
       org_langs.each do |l, b|
